@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategic Neo Clouds Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .portfolio-content {
+            position: relative;
+            z-index: 500;
+        }
+        
+        /* Mock Hero Section */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .hero-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid #84FE8E;
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #84FE8E, white);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            color: #84FE8E;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        /* Mock Cards Section */
+        .cards-section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin: 60px 0;
+        }
+        
+        .demo-card {
+            background: rgba(36, 36, 36, 0.8);
+            border: 1px solid rgba(132, 254, 142, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-5px);
+            border-color: #84FE8E;
+        }
+        
+        .card-title {
+            color: #84FE8E;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-content {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        /* Controls Panel */
+        .controls-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid #84FE8E;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 1001;
+            min-width: 280px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .controls-title {
+            color: #84FE8E;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: block;
+            color: #84FE8E;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .control-input {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(132, 254, 142, 0.3);
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .control-button {
+            background: linear-gradient(45deg, #84FE8E, #40E0D0);
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .control-button:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Zone Indicators */
+        .zone-indicator {
+            position: fixed;
+            background: rgba(132, 254, 142, 0.1);
+            border: 2px dashed #84FE8E;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .zone-indicator.visible {
+            opacity: 1;
+        }
+        
+        .zone-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #84FE8E;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        /* Info Panel */
+        .info-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid #84FE8E;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 1001;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .info-title {
+            color: #84FE8E;
+            margin-bottom: 10px;
+        }
+        
+        .info-item {
+            margin: 5px 0;
+            color: #ccc;
+        }
+        
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid rgba(132, 254, 142, 0.3);
+            border-radius: 25px;
+            padding: 15px 30px;
+            margin-top: 20px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-items {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-item {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            color: #84FE8E;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar (like in your design) -->
+    <nav class="nav-bar">
+        <div class="nav-items">
+            <a href="#" class="nav-item active">Home</a>
+            <a href="#" class="nav-item">About</a>
+            <a href="#" class="nav-item">Projects</a>
+            <a href="#" class="nav-item">Contact</a>
+        </div>
+    </nav>
+    
+    <!-- Zone Indicators (toggleable) -->
+    <div class="zone-indicator" id="zone-heroLeft">
+        <div class="zone-label">Hero Left<br>Behind</div>
+    </div>
+    <div class="zone-indicator" id="zone-heroRight">
+        <div class="zone-label">Hero Right<br>Overlay</div>
+    </div>
+    <div class="zone-indicator" id="zone-headerFloat">
+        <div class="zone-label">Header Float<br>Overlay</div>
+    </div>
+    <div class="zone-indicator" id="zone-cardFloat1">
+        <div class="zone-label">Card Float 1<br>Behind</div>
+    </div>
+    <div class="zone-indicator" id="zone-cardFloat2">
+        <div class="zone-label">Card Float 2<br>Overlay</div>
+    </div>
+    <div class="zone-indicator" id="zone-bottomLeft">
+        <div class="zone-label">Bottom Left<br>Behind</div>
+    </div>
+    <div class="zone-indicator" id="zone-topRight">
+        <div class="zone-label">Top Right<br>Behind</div>
+    </div>
+    <div class="zone-indicator" id="zone-centerFloat">
+        <div class="zone-label">Center Float<br>Overlay</div>
+    </div>
+    
+    <!-- Controls Panel -->
+    <div class="controls-panel">
+        <div class="controls-title">Strategic Cloud Controls</div>
+        
+        <div class="control-group">
+            <label class="control-label">Background Opacity</label>
+            <input type="range" class="control-input" id="bgOpacity" min="0" max="1" step="0.1" value="0.7">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Overlay Opacity</label>
+            <input type="range" class="control-input" id="overlayOpacity" min="0" max="0.5" step="0.05" value="0.25">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Float Speed</label>
+            <input type="range" class="control-input" id="floatSpeed" min="0.1" max="2" step="0.1" value="1">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Float Amplitude</label>
+            <input type="range" class="control-input" id="floatAmplitude" min="10" max="100" step="5" value="40">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Parallax Strength</label>
+            <input type="range" class="control-input" id="parallaxStrength" min="0" max="30" step="2" value="15">
+        </div>
+        
+        <button class="control-button" onclick="toggleZoneIndicators()">Toggle Zones</button>
+        <button class="control-button" onclick="regenerateClouds()">Regenerate</button>
+        <button class="control-button" onclick="resetToDefault()">Reset</button>
+        
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(132, 254, 142, 0.3);">
+            <button class="control-button" onclick="exportCloudSettings()">Export Settings</button>
+        </div>
+    </div>
+    
+    <!-- Info Panel -->
+    <div class="info-panel">
+        <div class="info-title">Cloud System Status</div>
+        <div class="info-item">Background Clouds: <span id="bgCloudCount">--</span></div>
+        <div class="info-item">Overlay Clouds: <span id="overlayCloudCount">--</span></div>
+        <div class="info-item">Mouse Parallax: <span id="parallaxStatus">Active</span></div>
+        <div class="info-item">Performance: <span id="perfStatus">--</span></div>
+    </div>
+    
+    <!-- Portfolio Content -->
+    <div class="portfolio-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-card">
+                <h1 class="hero-title">Crafting</h1>
+                <p class="hero-subtitle">automation driven systems</p>
+                <p style="color: #ccc;">Strategic cloud placement demo showcasing your neo cloud design concept</p>
+            </div>
+        </section>
+        
+        <!-- Cards Section -->
+        <section class="cards-section">
+            <h2 style="text-align: center; color: #84FE8E; font-size: 2.5rem; margin-bottom: 40px;">
+                Strategic Cloud Zones
+            </h2>
+            
+            <div class="cards-grid">
+                <div class="demo-card">
+                    <h3 class="card-title">Behind Cards</h3>
+                    <div class="card-content">
+                        Background clouds float behind content providing atmospheric depth without interfering with readability. They create a sense of space and immersion.
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3 class="card-title">Overlay Effects</h3>
+                    <div class="card-content">
+                        Overlay clouds appear above content with reduced opacity and screen blend mode. They maintain text legibility while adding dynamic visual interest.
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3 class="card-title">Organic Motion</h3>
+                    <div class="card-content">
+                        Each cloud has unique floating patterns with gentle rotation and breathing effects. The motion feels natural and non-distracting.
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3 class="card-title">Interactive Parallax</h3>
+                    <div class="card-content">
+                        Mouse movement creates subtle parallax effects. Overlay clouds respond more dramatically than background clouds for depth perception.
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3 class="card-title">Procedural Generation</h3>
+                    <div class="card-content">
+                        Clouds are generated procedurally in your neo style with concentric patterns, organic variations, and floating particles.
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3 class="card-title">Performance Optimized</h3>
+                    <div class="card-content">
+                        Strategic placement ensures optimal performance. Cloud count and quality adapt based on device capabilities.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        let zonesVisible = false;
+        
+        function updateZonePositions() {
+            const zones = {
+                heroLeft: { x: 0.15, y: 0.3 },
+                heroRight: { x: 0.85, y: 0.6 },
+                headerFloat: { x: 0.65, y: 0.15 },
+                cardFloat1: { x: 0.25, y: 0.7 },
+                cardFloat2: { x: 0.75, y: 0.45 },
+                bottomLeft: { x: 0.1, y: 0.85 },
+                topRight: { x: 0.9, y: 0.1 },
+                centerFloat: { x: 0.5, y: 0.5 }
+            };
+            
+            Object.entries(zones).forEach(([name, pos]) => {
+                const indicator = document.getElementById(`zone-${name}`);
+                if (indicator) {
+                    const size = 120;
+                    indicator.style.width = size + 'px';
+                    indicator.style.height = size + 'px';
+                    indicator.style.left = (pos.x * window.innerWidth - size/2) + 'px';
+                    indicator.style.top = (pos.y * window.innerHeight - size/2) + 'px';
+                }
+            });
+        }
+        
+        function toggleZoneIndicators() {
+            zonesVisible = !zonesVisible;
+            document.querySelectorAll('.zone-indicator').forEach(zone => {
+                zone.classList.toggle('visible', zonesVisible);
+            });
+        }
+        
+        function regenerateClouds() {
+            if (window.neoClouds && window.neoClouds.strategicPlacer) {
+                // Clear existing clouds
+                ['background', 'overlay'].forEach(type => {
+                    if (window.neoClouds.cloudGroups[type]) {
+                        window.neoClouds.cloudGroups[type].clear();
+                    }
+                });
+                
+                // Create new strategic placer
+                window.neoClouds.strategicPlacer = new StrategicCloudPlacer(window.neoClouds);
+                console.log('🔄 Clouds regenerated');
+            }
+        }
+        
+        function resetToDefault() {
+            document.getElementById('bgOpacity').value = 0.7;
+            document.getElementById('overlayOpacity').value = 0.25;
+            document.getElementById('floatSpeed').value = 1;
+            document.getElementById('floatAmplitude').value = 40;
+            document.getElementById('parallaxStrength').value = 15;
+            applySettings();
+        }
+        
+        function applySettings() {
+            if (!window.neoClouds || !window.neoClouds.strategicPlacer) return;
+            
+            const settings = {
+                bgOpacity: parseFloat(document.getElementById('bgOpacity').value),
+                overlayOpacity: parseFloat(document.getElementById('overlayOpacity').value),
+                floatSpeed: parseFloat(document.getElementById('floatSpeed').value),
+                floatAmplitude: parseFloat(document.getElementById('floatAmplitude').value),
+                parallaxStrength: parseFloat(document.getElementById('parallaxStrength').value)
+            };
+            
+            // Apply to existing clouds
+            window.neoClouds.strategicPlacer.placements.forEach(placement => {
+                const cloud = placement.cloud;
+                
+                if (cloud.userData.isOverlay) {
+                    cloud.material.opacity = settings.overlayOpacity;
+                } else {
+                    cloud.material.opacity = settings.bgOpacity;
+                }
+                
+                cloud.userData.floatSpeed = settings.floatSpeed;
+                cloud.userData.floatAmplitude = settings.floatAmplitude;
+            });
+            
+            console.log('⚙️ Settings applied:', settings);
+        }
+        
+        function exportCloudSettings() {
+            const settings = {
+                bgOpacity: document.getElementById('bgOpacity').value,
+                overlayOpacity: document.getElementById('overlayOpacity').value,
+                floatSpeed: document.getElementById('floatSpeed').value,
+                floatAmplitude: document.getElementById('floatAmplitude').value,
+                parallaxStrength: document.getElementById('parallaxStrength').value
+            };
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'strategic-clouds-settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function updateStatus() {
+            if (window.neoClouds && window.neoClouds.strategicPlacer) {
+                const placements = window.neoClouds.strategicPlacer.placements;
+                const bgCount = placements.filter(p => !p.cloud.userData.isOverlay).length;
+                const overlayCount = placements.filter(p => p.cloud.userData.isOverlay).length;
+                
+                document.getElementById('bgCloudCount').textContent = bgCount;
+                document.getElementById('overlayCloudCount').textContent = overlayCount;
+                document.getElementById('perfStatus').textContent = 'Optimal';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateZonePositions();
+            
+            // Add event listeners
+            ['bgOpacity', 'overlayOpacity', 'floatSpeed', 'floatAmplitude', 'parallaxStrength'].forEach(id => {
+                document.getElementById(id).addEventListener('input', applySettings);
+            });
+            
+            // Update status periodically
+            setInterval(updateStatus, 1000);
+            
+            // Handle resize
+            window.addEventListener('resize', updateZonePositions);
+        });
+    </script>
+    
+    <!-- Load Cloud System -->
+    <script src="js/neo-clouds.js"></script>
+    <script src="js/procedural-clouds.js"></script>
+</body>
+</html>

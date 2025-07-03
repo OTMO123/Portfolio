@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a0a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #84FE8E;
+            border-radius: 10px;
+        }
+        
+        .direct-image {
+            max-width: 300px;
+            border: 2px solid #84FE8E;
+            border-radius: 10px;
+        }
+        
+        #canvas-test {
+            border: 2px solid #84FE8E;
+            border-radius: 10px;
+        }
+        
+        .status {
+            color: #84FE8E;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cloud Texture Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Direct Image Load Test</h2>
+        <img id="direct-image" class="direct-image" src="main_cloude.jpg" alt="Direct cloud image">
+        <div id="image-status" class="status">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Three.js Canvas Test</h2>
+        <canvas id="canvas-test" width="400" height="300"></canvas>
+        <div id="canvas-status" class="status">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Console Output</h2>
+        <div id="console-output" style="font-family: monospace; font-size: 12px; color: #ccc;"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Test 1: Direct image loading
+        const directImg = document.getElementById('direct-image');
+        const imageStatus = document.getElementById('image-status');
+        
+        directImg.onload = () => {
+            imageStatus.textContent = `✅ Direct image loaded: ${directImg.naturalWidth}x${directImg.naturalHeight}`;
+            testThreeJS();
+        };
+        
+        directImg.onerror = () => {
+            imageStatus.textContent = '❌ Direct image failed to load';
+            imageStatus.style.color = '#ff6b6b';
+        };
+        
+        // Test 2: Three.js texture loading
+        function testThreeJS() {
+            const canvas = document.getElementById('canvas-test');
+            const canvasStatus = document.getElementById('canvas-status');
+            
+            try {
+                // Scene setup
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, 400/300, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    alpha: true
+                });
+                renderer.setSize(400, 300);
+                
+                // Load texture
+                const loader = new THREE.TextureLoader();
+                loader.load(
+                    'main_cloude.jpg',
+                    (texture) => {
+                        // Create material - NO TRANSPARENCY
+                        const material = new THREE.MeshBasicMaterial({
+                            map: texture,
+                            transparent: false
+                        });
+                        
+                        // Create geometry
+                        const geometry = new THREE.PlaneGeometry(2, 1.2);
+                        const cloud = new THREE.Mesh(geometry, material);
+                        
+                        scene.add(cloud);
+                        camera.position.z = 2;
+                        
+                        // Render
+                        renderer.render(scene, camera);
+                        
+                        canvasStatus.textContent = '✅ Three.js texture loaded and rendered';
+                        logMessage('✅ Three.js test successful');
+                    },
+                    (progress) => {
+                        canvasStatus.textContent = 'Loading texture...';
+                        logMessage(`Loading: ${progress.loaded}/${progress.total}`);
+                    },
+                    (error) => {
+                        canvasStatus.textContent = '❌ Three.js texture failed';
+                        canvasStatus.style.color = '#ff6b6b';
+                        logMessage(`❌ Three.js error: ${error}`);
+                    }
+                );
+                
+            } catch (error) {
+                canvasStatus.textContent = `❌ Three.js setup failed: ${error.message}`;
+                canvasStatus.style.color = '#ff6b6b';
+                logMessage(`❌ Setup error: ${error.message}`);
+            }
+        }
+        
+        // Console logging
+        function logMessage(message) {
+            const consoleOutput = document.getElementById('console-output');
+            const time = new Date().toLocaleTimeString();
+            consoleOutput.innerHTML += `[${time}] ${message}<br>`;
+            console.log(message);
+        }
+        
+        // Initial log
+        logMessage('🧪 Cloud texture test started');
+    </script>
+</body>
+</html>

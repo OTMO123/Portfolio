@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neo Clouds Animation Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0a0a;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .demo-content {
+            position: relative;
+            z-index: 500;
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-section {
+            margin: 200px 0;
+            text-align: center;
+            padding: 60px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 20px;
+            border: 1px solid rgba(132, 254, 142, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .demo-title {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #84FE8E, #3B82F6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .demo-subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 40px;
+        }
+        
+        .demo-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 26, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(132, 254, 142, 0.3);
+            z-index: 1001;
+            min-width: 250px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: block;
+            color: #84FE8E;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .control-input {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(132, 254, 142, 0.3);
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .control-button {
+            background: linear-gradient(45deg, #84FE8E, #3B82F6);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .control-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .stats {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 26, 26, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(132, 254, 142, 0.3);
+            z-index: 1001;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        
+        .card {
+            background: rgba(36, 36, 36, 0.8);
+            padding: 40px;
+            margin: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(132, 254, 142, 0.2);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Stats Display -->
+    <div class="stats" id="stats">
+        <div>FPS: <span id="fps">--</span></div>
+        <div>Clouds: <span id="cloudCount">--</span></div>
+        <div>Particles: <span id="particleCount">--</span></div>
+        <div>Performance: <span id="performance">--</span></div>
+    </div>
+    
+    <!-- Animation Controls -->
+    <div class="demo-controls">
+        <h3 style="color: #84FE8E; margin-top: 0;">Animation Controls</h3>
+        
+        <div class="control-group">
+            <label class="control-label">Background Speed</label>
+            <input type="range" class="control-input" id="bgSpeed" min="0" max="0.01" step="0.001" value="0.003">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Overlay Speed</label>
+            <input type="range" class="control-input" id="overlaySpeed" min="0" max="0.005" step="0.0001" value="0.001">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Pulse Speed</label>
+            <input type="range" class="control-input" id="pulseSpeed" min="0" max="0.01" step="0.001" value="0.002">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Background Opacity</label>
+            <input type="range" class="control-input" id="bgOpacity" min="0" max="1" step="0.1" value="0.8">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Overlay Opacity</label>
+            <input type="range" class="control-input" id="overlayOpacity" min="0" max="0.5" step="0.05" value="0.15">
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">Particle Emission Rate</label>
+            <input type="range" class="control-input" id="particleRate" min="0" max="10" step="1" value="2">
+        </div>
+        
+        <button class="control-button" onclick="pauseAnimation()">Pause</button>
+        <button class="control-button" onclick="resumeAnimation()">Resume</button>
+        <button class="control-button" onclick="resetSettings()">Reset</button>
+        
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(132, 254, 142, 0.3);">
+            <button class="control-button" onclick="exportSettings()">Export Settings</button>
+            <button class="control-button" onclick="loadCustomParticles()">Load Particles</button>
+        </div>
+    </div>
+    
+    <!-- Demo Content -->
+    <div class="demo-content">
+        <div class="demo-section">
+            <h1 class="demo-title">Neo Clouds Animation</h1>
+            <p class="demo-subtitle">Real-time WebGL cloud system with custom particle effects</p>
+            <p>This demonstration shows your custom neo clouds in action. Use the controls on the right to adjust animation parameters in real-time.</p>
+        </div>
+        
+        <div class="card">
+            <h2 style="color: #84FE8E;">Background Clouds</h2>
+            <p>These clouds float behind content with subtle parallax effects. They provide atmospheric depth without interfering with readability.</p>
+        </div>
+        
+        <div class="card">
+            <h2 style="color: #3B82F6;">Overlay Clouds</h2>
+            <p>Overlay clouds appear above content with reduced opacity and screen blend mode. They create a sense of immersion while maintaining text legibility.</p>
+        </div>
+        
+        <div class="card">
+            <h2 style="color: #8B5CF6;">Custom Particles</h2>
+            <p>Particle effects emanate from clouds, creating dynamic trails and ambient atmosphere. Ready for your custom particle assets!</p>
+        </div>
+        
+        <div class="demo-section">
+            <h2 class="demo-title">Performance Optimized</h2>
+            <p class="demo-subtitle">Adaptive quality based on device capabilities</p>
+            <p>The system automatically adjusts cloud count and particle density based on device performance. Mobile devices get CSS fallbacks for optimal battery life.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Animation control functions
+        let animationPaused = false;
+        
+        function pauseAnimation() {
+            if (window.neoClouds) {
+                window.neoClouds.pause();
+                animationPaused = true;
+            }
+        }
+        
+        function resumeAnimation() {
+            if (window.neoClouds) {
+                window.neoClouds.resume();
+                animationPaused = false;
+            }
+        }
+        
+        function resetSettings() {
+            document.getElementById('bgSpeed').value = 0.003;
+            document.getElementById('overlaySpeed').value = 0.001;
+            document.getElementById('pulseSpeed').value = 0.002;
+            document.getElementById('bgOpacity').value = 0.8;
+            document.getElementById('overlayOpacity').value = 0.15;
+            document.getElementById('particleRate').value = 2;
+            updateAnimationSettings();
+        }
+        
+        function updateAnimationSettings() {
+            if (!window.neoClouds || !window.neoClouds.config) return;
+            
+            window.neoClouds.config.animation.backgroundSpeed = parseFloat(document.getElementById('bgSpeed').value);
+            window.neoClouds.config.animation.overlaySpeed = parseFloat(document.getElementById('overlaySpeed').value);
+            window.neoClouds.config.animation.pulseSpeed = parseFloat(document.getElementById('pulseSpeed').value);
+            window.neoClouds.config.visual.backgroundOpacity = parseFloat(document.getElementById('bgOpacity').value);
+            window.neoClouds.config.visual.overlayOpacity = parseFloat(document.getElementById('overlayOpacity').value);
+            
+            if (window.particleSystem) {
+                window.particleSystem.setEmissionRate(parseInt(document.getElementById('particleRate').value));
+            }
+            
+            // Update existing clouds
+            if (window.neoClouds.cloudGroups) {
+                ['background', 'overlay'].forEach(type => {
+                    const group = window.neoClouds.cloudGroups[type];
+                    if (group && group.children) {
+                        group.children.forEach(cloud => {
+                            if (type === 'background') {
+                                cloud.material.opacity = window.neoClouds.config.visual.backgroundOpacity;
+                            } else {
+                                cloud.material.opacity = window.neoClouds.config.visual.overlayOpacity;
+                            }
+                        });
+                    }
+                });
+            }
+        }
+        
+        function exportSettings() {
+            const settings = {
+                backgroundSpeed: document.getElementById('bgSpeed').value,
+                overlaySpeed: document.getElementById('overlaySpeed').value,
+                pulseSpeed: document.getElementById('pulseSpeed').value,
+                backgroundOpacity: document.getElementById('bgOpacity').value,
+                overlayOpacity: document.getElementById('overlayOpacity').value,
+                particleRate: document.getElementById('particleRate').value
+            };
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'neo-clouds-settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function loadCustomParticles() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.accept = 'image/*';
+            
+            input.onchange = async (e) => {
+                const files = Array.from(e.target.files);
+                const particleAssets = [];
+                
+                for (const file of files) {
+                    const url = URL.createObjectURL(file);
+                    particleAssets.push({
+                        name: file.name.replace(/\.[^/.]+$/, ""),
+                        path: url,
+                        type: 'custom'
+                    });
+                }
+                
+                if (window.particleSystem && particleAssets.length > 0) {
+                    await window.particleSystem.loadCustomParticles(particleAssets);
+                    alert(`Loaded ${particleAssets.length} custom particles!`);
+                }
+            };
+            
+            input.click();
+        }
+        
+        // Performance monitoring
+        let frameCount = 0;
+        let lastTime = performance.now();
+        
+        function updateStats() {
+            frameCount++;
+            const currentTime = performance.now();
+            
+            if (currentTime - lastTime >= 1000) {
+                const fps = frameCount;
+                frameCount = 0;
+                lastTime = currentTime;
+                
+                document.getElementById('fps').textContent = fps;
+                
+                if (window.neoClouds && window.neoClouds.cloudGroups) {
+                    const bgClouds = window.neoClouds.cloudGroups.background ? window.neoClouds.cloudGroups.background.children.length : 0;
+                    const overlayClouds = window.neoClouds.cloudGroups.overlay ? window.neoClouds.cloudGroups.overlay.children.length : 0;
+                    document.getElementById('cloudCount').textContent = bgClouds + overlayClouds;
+                }
+                
+                if (window.particleSystem) {
+                    document.getElementById('particleCount').textContent = window.particleSystem.particles ? window.particleSystem.particles.length : 0;
+                }
+                
+                // Performance assessment
+                let perfStatus = 'Good';
+                if (fps < 30) perfStatus = 'Poor';
+                else if (fps < 45) perfStatus = 'Fair';
+                document.getElementById('performance').textContent = perfStatus;
+            }
+            
+            requestAnimationFrame(updateStats);
+        }
+        
+        // Initialize controls
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add event listeners to controls
+            ['bgSpeed', 'overlaySpeed', 'pulseSpeed', 'bgOpacity', 'overlayOpacity', 'particleRate'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateAnimationSettings);
+            });
+            
+            // Start performance monitoring
+            updateStats();
+            
+            // Wait for neo clouds to initialize
+            const checkInit = () => {
+                if (window.neoClouds && window.neoClouds.initialized) {
+                    console.log('🎮 Demo controls ready');
+                } else {
+                    setTimeout(checkInit, 100);
+                }
+            };
+            checkInit();
+        });
+    </script>
+    
+    <!-- Load the Neo Clouds system -->
+    <script src="js/neo-clouds.js"></script>
+    <script src="js/particle-system.js"></script>
+</body>
+</html>

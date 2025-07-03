@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurik - Economics, Data & Innovation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #f59e0b;
+            --text: #1f2937;
+            --bg: #0f0f23;
+            --surface: #1a1a3e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 25%, #2d1b69 50%, #1a1a3e 75%, #0f0f23 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+
+        .glass-nav {
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Text animations */
+        .typing-text {
+            overflow: hidden;
+            border-right: 2px solid var(--accent);
+            white-space: nowrap;
+            animation: typing 4s steps(40, end) infinite, blink 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            0%, 50% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--accent); }
+        }
+
+        /* Hover effects */
+        .hover-glow {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .hover-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+            filter: blur(20px);
+        }
+
+        .hover-glow:hover::before {
+            opacity: 0.3;
+        }
+
+        .hover-glow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Skill bars */
+        .skill-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            border-radius: 10px;
+            transition: width 2s ease-in-out;
+            position: relative;
+        }
+
+        .skill-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Card animations */
+        .card-3d {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card-3d:hover .card-inner {
+            transform: rotateY(10deg) rotateX(10deg);
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 14px 32px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            border: 2px solid var(--primary);
+            background: transparent;
+            padding: 12px 30px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn-secondary:hover::before {
+            width: 100%;
+        }
+
+        /* Fade in animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-delayed {
+            animation-delay: 0.2s;
+        }
+
+        .fade-in-delayed-2 {
+            animation-delay: 0.4s;
+        }
+
+        .fade-in-delayed-3 {
+            animation-delay: 0.6s;
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Floating Particles -->
+    <div id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full glass-nav z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-display font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                    Aurik
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link font-medium hover:text-indigo-400 transition-colors">Home</a>
+                    <a href="#about" class="nav-link font-medium hover:text-indigo-400 transition-colors">About</a>
+                    <a href="#skills" class="nav-link font-medium hover:text-indigo-400 transition-colors">Skills</a>
+                    <a href="#projects" class="nav-link font-medium hover:text-indigo-400 transition-colors">Projects</a>
+                    <a href="#experience" class="nav-link font-medium hover:text-indigo-400 transition-colors">Experience</a>
+                    <a href="#contact" class="nav-link font-medium hover:text-indigo-400 transition-colors">Contact</a>
+                </div>
+                <button class="md:hidden text-white" id="mobile-menu-btn">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div class="container mx-auto px-6 text-center z-10">
+            <!-- Profile Image -->
+            <div class="relative mb-8 fade-in">
+                <div class="w-40 h-40 mx-auto relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full animate-spin-slow"></div>
+                    <div class="absolute inset-2 bg-gray-900 rounded-full overflow-hidden">
+                        <img src="/avatar.jpg" alt="Aurik" class="w-full h-full object-cover" 
+                             onerror="this.src='https://ui-avatars.com/api/?name=Aurik&size=150&background=6366f1&color=ffffff&bold=true'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="text-6xl md:text-8xl font-display font-black mb-6 fade-in-delayed">
+                <span class="bg-gradient-to-r from-white via-indigo-200 to-white bg-clip-text text-transparent">
+                    Aurik
+                </span>
+            </h1>
+
+            <!-- Animated Subtitle -->
+            <div class="h-16 mb-8 fade-in-delayed-2">
+                <h2 class="text-2xl md:text-3xl font-display font-semibold text-indigo-300 typing-text">
+                    Economics × Data × Innovation
+                </h2>
+            </div>
+
+            <!-- Description -->
+            <p class="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed fade-in-delayed-3">
+                <span class="text-amber-400 font-semibold">Transforming businesses</span> through 
+                <span class="text-indigo-400 font-semibold">data-driven insights</span> and 
+                <span class="text-purple-400 font-semibold">automation solutions</span>. 
+                Student at Reichman University specializing in Economics, Entrepreneurship, and Data Science.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16 fade-in-delayed-3">
+                <button class="btn-primary hover-glow">
+                    <i data-lucide="rocket" class="inline-block w-5 h-5 mr-2"></i>
+                    Let's Collaborate
+                </button>
+                <button class="btn-secondary hover-glow">
+                    <i data-lucide="download" class="inline-block w-5 h-5 mr-2"></i>
+                    Download CV
+                </button>
+            </div>
+
+            <!-- Social Links -->
+            <div class="flex items-center justify-center gap-6 fade-in-delayed-3">
+                <a href="#" class="glass p-4 rounded-full hover-glow">
+                    <i data-lucide="github" class="w-6 h-6"></i>
+                </a>
+                <a href="#" class="glass p-4 rounded-full hover-glow">
+                    <i data-lucide="linkedin" class="w-6 h-6"></i>
+                </a>
+                <a href="#" class="glass p-4 rounded-full hover-glow">
+                    <i data-lucide="twitter" class="w-6 h-6"></i>
+                </a>
+                <a href="#" class="glass p-4 rounded-full hover-glow">
+                    <i data-lucide="mail" class="w-6 h-6"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="glass p-3 rounded-full">
+                <i data-lucide="chevron-down" class="w-6 h-6"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-6xl font-display font-bold mb-6">
+                    <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        About Me
+                    </span>
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Passionate about creating innovative solutions that drive real impact
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- Content -->
+                <div class="space-y-8">
+                    <div class="glass p-8 hover-glow card-3d">
+                        <div class="card-inner">
+                            <h3 class="text-2xl font-display font-bold mb-4 text-indigo-300">My Journey</h3>
+                            <p class="text-gray-300 leading-relaxed mb-6">
+                                As a student at <span class="text-indigo-400 font-semibold">Reichman University</span>, I'm specializing in Economics, Entrepreneurship, and Data Science. My passion lies in bridging the gap between theoretical economic principles and practical business applications through technology and automation.
+                            </p>
+                            <p class="text-gray-300 leading-relaxed">
+                                I've developed expertise in <span class="text-purple-400 font-semibold">data analysis</span>, <span class="text-amber-400 font-semibold">business process automation</span>, and <span class="text-indigo-400 font-semibold">API integration</span>, helping businesses optimize their operations and make data-driven decisions.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Key Skills Tags -->
+                    <div class="flex flex-wrap gap-3">
+                        <span class="glass px-4 py-2 rounded-full text-sm font-semibold text-indigo-300">Problem Solving</span>
+                        <span class="glass px-4 py-2 rounded-full text-sm font-semibold text-purple-300">Data Analysis</span>
+                        <span class="glass px-4 py-2 rounded-full text-sm font-semibold text-amber-300">Automation</span>
+                        <span class="glass px-4 py-2 rounded-full text-sm font-semibold text-pink-300">Innovation</span>
+                        <span class="glass px-4 py-2 rounded-full text-sm font-semibold text-cyan-300">Leadership</span>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="glass p-8 text-center hover-glow card-3d">
+                        <div class="card-inner">
+                            <div class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent mb-2">
+                                3+
+                            </div>
+                            <p class="text-gray-400 font-medium">Years Experience</p>
+                        </div>
+                    </div>
+                    <div class="glass p-8 text-center hover-glow card-3d">
+                        <div class="card-inner">
+                            <div class="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                                15+
+                            </div>
+                            <p class="text-gray-400 font-medium">Projects</p>
+                        </div>
+                    </div>
+                    <div class="glass p-8 text-center hover-glow card-3d">
+                        <div class="card-inner">
+                            <div class="text-4xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent mb-2">
+                                10+
+                            </div>
+                            <p class="text-gray-400 font-medium">Technologies</p>
+                        </div>
+                    </div>
+                    <div class="glass p-8 text-center hover-glow card-3d">
+                        <div class="card-inner">
+                            <div class="text-4xl font-bold bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+                                100%
+                            </div>
+                            <p class="text-gray-400 font-medium">Dedication</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-6xl font-display font-bold mb-6">
+                    <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        Skills & Expertise
+                    </span>
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Technologies and methodologies I use to bring ideas to life
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 xl:grid-cols-4 gap-8">
+                <!-- Programming & Data -->
+                <div class="glass p-8 hover-glow card-3d">
+                    <div class="card-inner">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="code" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-bold mb-6 text-cyan-300">Programming & Data</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Python</span>
+                                    <span class="text-cyan-400 font-mono text-sm">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Data Analysis</span>
+                                    <span class="text-cyan-400 font-mono text-sm">90%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Golang</span>
+                                    <span class="text-cyan-400 font-mono text-sm">60%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Web Technologies -->
+                <div class="glass p-8 hover-glow card-3d">
+                    <div class="card-inner">
+                        <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="globe" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-bold mb-6 text-pink-300">Web Technologies</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">JavaScript</span>
+                                    <span class="text-pink-400 font-mono text-sm">75%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">HTML/CSS</span>
+                                    <span class="text-pink-400 font-mono text-sm">80%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">API Integration</span>
+                                    <span class="text-pink-400 font-mono text-sm">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business & Analytics -->
+                <div class="glass p-8 hover-glow card-3d">
+                    <div class="card-inner">
+                        <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="trending-up" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-bold mb-6 text-amber-300">Business & Analytics</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Excel</span>
+                                    <span class="text-amber-400 font-mono text-sm">95%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Economics</span>
+                                    <span class="text-amber-400 font-mono text-sm">90%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Statistics</span>
+                                    <span class="text-amber-400 font-mono text-sm">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automation & Tools -->
+                <div class="glass p-8 hover-glow card-3d">
+                    <div class="card-inner">
+                        <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6">
+                            <i data-lucide="settings" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-bold mb-6 text-emerald-300">Automation & Tools</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Process Automation</span>
+                                    <span class="text-emerald-400 font-mono text-sm">88%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 88%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Project Management</span>
+                                    <span class="text-emerald-400 font-mono text-sm">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-medium text-gray-300">Team Leadership</span>
+                                    <span class="text-emerald-400 font-mono text-sm">80%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-5xl md:text-6xl font-display font-bold mb-6">
+                    <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        Let's Create Something Amazing
+                    </span>
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Ready to transform your ideas into reality? Let's collaborate and build the future together.
+                </p>
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <div class="glass p-12 hover-glow">
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <!-- Contact Info -->
+                        <div class="space-y-8">
+                            <div>
+                                <h3 class="text-2xl font-display font-bold mb-6 text-indigo-300">Get In Touch</h3>
+                                <p class="text-gray-300 leading-relaxed mb-8">
+                                    I'm always excited to discuss new projects, creative ideas, or opportunities to be part of your vision. Whether you need automation solutions, data analysis, or strategic consulting, let's talk!
+                                </p>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                                        <i data-lucide="mail" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Email</h4>
+                                        <p class="text-gray-400">aurik@example.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                                        <i data-lucide="map-pin" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Location</h4>
+                                        <p class="text-gray-400">Israel</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                                        <i data-lucide="clock" class="w-6 h-6 text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-white">Response Time</h4>
+                                        <p class="text-gray-400">Usually within 24 hours</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Form -->
+                        <div class="space-y-6">
+                            <form class="space-y-6">
+                                <div>
+                                    <input type="text" placeholder="Your Name" 
+                                           class="w-full p-4 bg-rgba(255,255,255,0.05) border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-indigo-500 focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <input type="email" placeholder="Your Email" 
+                                           class="w-full p-4 bg-rgba(255,255,255,0.05) border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-indigo-500 focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <input type="text" placeholder="Subject" 
+                                           class="w-full p-4 bg-rgba(255,255,255,0.05) border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-indigo-500 focus:outline-none transition-colors">
+                                </div>
+                                <div>
+                                    <textarea rows="6" placeholder="Your Message" 
+                                              class="w-full p-4 bg-rgba(255,255,255,0.05) border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-indigo-500 focus:outline-none transition-colors resize-none"></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary w-full hover-glow">
+                                    <i data-lucide="send" class="inline-block w-5 h-5 mr-2"></i>
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <p class="text-gray-400">
+                    © 2024 Aurik. Crafted with passion and innovation. 
+                    <span class="text-indigo-400">Built with modern web technologies.</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(15, 15, 35, 0.95)';
+            } else {
+                nav.style.background = 'rgba(15, 15, 35, 0.8)';
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            createParticles();
+        });
+
+        // Custom cursor effect (optional)
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.cursor');
+            if (cursor) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            }
+        });
+    </script>
+</body>
+</html>
